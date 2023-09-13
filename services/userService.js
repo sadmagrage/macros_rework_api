@@ -76,7 +76,10 @@ const registrar = async (userDto) => {
     const user = User.build({ username: userDto.username, password: userDto.hashPassword });
 
     await user.save();
-    return user;
+
+    const token = jwt.sign({ username: user.username }, process.env.SEGREDO, { expiresIn: "1h" });
+
+    return token;
 }
 
 module.exports = { login, data, update, registrar, alterImg }
