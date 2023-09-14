@@ -1,0 +1,35 @@
+const Comida = require("../models/ComidaModel");
+const jwt = require("jsonwebtoken");
+
+const findAll = async () => {
+    const comida = await Comida.findAll();
+
+    return comida;
+}
+
+const findOne = async (comidaId) => {
+    const comida = await Comida.findOne({ where: { comida_id: comidaId } });
+
+    return comida;
+}
+
+const save = async (token, comidaDto) => {
+    const username = await jwt.verify(token, process.env.SEGREDO, (err, decoded) => {
+        if (err) throw err;
+        return decoded.username;
+    });
+
+    if (username !== "sadmag") return;
+
+    ["carb", "protl", "proth", "fat"].map(item => {
+        comidaDto[item] = comidaDto[item]/comidaDto.quantidade;
+    });
+
+    const comida = Comida.build({ nome: comidaDto.nome, carb: comidaDto.carb, protl: comidaDto.protl, proth: comidaDto.proth, fat: comidaDto.fat });
+
+    await comida.save();
+
+    return comida;
+}
+
+module.exports = { findAll, findOne, save }

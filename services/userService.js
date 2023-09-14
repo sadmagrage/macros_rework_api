@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-const User = require("../models/userModel");
+const User = require("../models/UserModel");
 const CustomError = require("../errors/CustomError");
 
 const login = async (userDto) => {
@@ -50,6 +50,7 @@ const update = async (token, userDto) => {
 };
 
 const alterImg = async (token, userDto) => {
+    console.log("chegou aqui")
     const username = await jwt.verify(token, process.env.SEGREDO, (err, decoded) => {
         if (err) throw new CustomError(err, 401);
         return decoded.username;
