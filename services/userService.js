@@ -25,7 +25,7 @@ const data = async (token) => {
         return decoded.username;
     });
     
-    const user = await User.findOne({ where: { username: username }, attributes: [ 'username', 'peso', 'bodyfat', 'idade', 'altura', 'treino', 'deficit', 'superavit', 'estado', 'img' ]});
+    const user = await User.findOne({ where: { username: username }, attributes: [ 'username', 'peso', 'bodyfat', 'idade', 'altura', 'treino', 'deficit', 'superavit', 'adicional', 'estado', 'img' ]});
 
     if (!user) return "No user found";
 
@@ -50,7 +50,6 @@ const update = async (token, userDto) => {
 };
 
 const alterImg = async (token, userDto) => {
-    console.log("chegou aqui")
     const username = await jwt.verify(token, process.env.SEGREDO, (err, decoded) => {
         if (err) throw new CustomError(err, 401);
         return decoded.username;
@@ -59,7 +58,6 @@ const alterImg = async (token, userDto) => {
     const user = await User.findOne({ where: { username: username } });
 
     user.img = userDto.img;
-
     await user.save();
 
     return user;
@@ -74,7 +72,7 @@ const registrar = async (userDto) => {
     
     userDto["hashPassword"] = getHash;
 
-    const user = User.build({ username: userDto.username, password: userDto.hashPassword });
+    const user = User.build({ username: userDto.username, password: userDto.hashPassword, treino: JSON.stringify({"domingo": [], "segunda": [], "terca": [], "quarta": [], "quinta": [], "sexta": [], "sabado": []}) });
 
     await user.save();
 

@@ -2,7 +2,7 @@ const { DataTypes } = require("sequelize");
 
 const { sequelize } = require("../configs/sequelize");
 
-const User = sequelize.define("users", {
+const User = sequelize.define("user_macros", {
     user_id: {
         type: DataTypes.CHAR(36),
         defaultValue: DataTypes.UUIDV4,
@@ -30,14 +30,16 @@ const User = sequelize.define("users", {
         type: DataTypes.SMALLINT
     },
     treino: {
-        type: DataTypes.JSON,
-        default: '{"domingo": [], "segunda": [], "terca": [], "quarta": [], "quinta": [], "sexta": [], "sabado": []}'
+        type: DataTypes.JSON
     },
     deficit: {
         type: DataTypes.SMALLINT
     },
     superavit: {
         type: DataTypes.TINYINT
+    },
+    adicional: {
+        type: DataTypes.SMALLINT
     },
     estado: {
         type: DataTypes.ENUM("bulking", "cutting", "manutencao")

@@ -37,6 +37,7 @@ const registrar = async (req, res) => {
         
         res.status(201).json(user);
     } catch (error) {
+        console.log(error.message)
         if (error instanceof CustomError) {
             res.status(error.status).json(error.message);
             return;
@@ -48,7 +49,7 @@ const registrar = async (req, res) => {
 const alterImg = async (req, res) => {
     try {
         const user = await userService.alterImg(req.header("Authorization"), req.body);
-
+        
         res.status(200).json(user);
     } catch (error) {
         if (error instanceof CustomError) {

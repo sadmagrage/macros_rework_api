@@ -2,7 +2,7 @@ const Comida = require("../models/ComidaModel");
 const jwt = require("jsonwebtoken");
 
 const findAll = async () => {
-    const comida = await Comida.findAll();
+    const comida = await Comida.findAll({ order: [ ["createdAt", "ASC"] ] });
 
     return comida;
 }
@@ -25,7 +25,7 @@ const save = async (token, comidaDto) => {
         comidaDto[item] = comidaDto[item]/comidaDto.quantidade;
     });
 
-    const comida = Comida.build({ nome: comidaDto.nome, carb: comidaDto.carb, protl: comidaDto.protl, proth: comidaDto.proth, fat: comidaDto.fat });
+    const comida = Comida.build({ nome: comidaDto.nome, carb: comidaDto.carb, protl: comidaDto.protl, proth: comidaDto.proth, fat: comidaDto.fat, img: comidaDto.img });
 
     await comida.save();
 
