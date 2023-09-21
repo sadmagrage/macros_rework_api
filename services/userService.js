@@ -4,6 +4,7 @@ require("dotenv").config();
 
 const User = require("../models/UserModel");
 const CustomError = require("../errors/CustomError");
+const calculateSpentFunction = require("../utils/calculateSpent");
 
 const login = async (userDto) => {
     const user = await User.findOne({ where: { username: userDto.username } });
@@ -21,7 +22,7 @@ const login = async (userDto) => {
 
 const data = async (token) => {
     const username = await jwt.verify(token, process.env.SEGREDO, (err, decoded) => {
-        if (err) throw new CustomError(err, 401);
+        if (err) throw new CustomError(err.message, 401);
         return decoded.username;
     });
     
@@ -34,7 +35,7 @@ const data = async (token) => {
 
 const update = async (token, userDto) => {
     const username = await jwt.verify(token, process.env.SEGREDO, (err, decoded) => {
-        if (err) throw new CustomError(err, 401);
+        if (err) throw new CustomError(err.message, 401);
         return decoded.username;
     });
 
@@ -51,7 +52,7 @@ const update = async (token, userDto) => {
 
 const alterImg = async (token, userDto) => {
     const username = await jwt.verify(token, process.env.SEGREDO, (err, decoded) => {
-        if (err) throw new CustomError(err, 401);
+        if (err) throw new CustomError(err.message, 401);
         return decoded.username;
     });
 
@@ -81,4 +82,17 @@ const registrar = async (userDto) => {
     return token;
 }
 
-module.exports = { login, data, update, registrar, alterImg }
+const calculateSpent = async (token) => {
+    const username = await jwt.verify(token, process.env.SEGREDO, (err, decoded) => {
+        if (err) throw new CustomError(err.message, 401);
+        return decoded.username;
+    });
+
+    const user = await User.findOne({ where: { username: username } });
+
+    const spent = calculateSpentFunction(user);
+
+    return spent
+};
+
+module.exports = { login, data, update, registrar, alterImg, calculateSpent }

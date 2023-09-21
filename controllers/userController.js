@@ -74,4 +74,18 @@ const update = async (req, res) => {
     }
 }
 
-module.exports = { login, data, update, registrar, alterImg }
+const calculateSpent = async (req, res) => {
+    try {
+        const spent = await userService.calculateSpent(req.header("Authorization"));
+
+        res.status(200).json(spent);
+    } catch (error) {
+        if (error instanceof CustomError) {
+            res.status(error.status).json(error.message);
+            return;
+        }
+        res.status(500).json(error.message);
+    }
+};
+
+module.exports = { login, data, update, registrar, alterImg, calculateSpent }
