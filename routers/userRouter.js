@@ -1,7 +1,7 @@
 const bodyParser = require("body-parser");
 const express = require("express");
 
-const { login, data, registrar, update, alterImg, calculateSpent } = require("../controllers/userController")
+const { login, data, registrar, update, alterImg, calculateSpent, permission } = require("../controllers/userController")
 
 const router = express.Router();
 
@@ -18,5 +18,7 @@ router.post("/alter_img", alterImg);
 router.post("/registrar", registrar);
 
 router.get("/calculate", calculateSpent);
+
+router.get("/permission", permission);
 
 module.exports = { router }

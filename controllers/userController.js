@@ -88,4 +88,10 @@ const calculateSpent = async (req, res) => {
     }
 };
 
-module.exports = { login, data, update, registrar, alterImg, calculateSpent }
+const permission = (req, res) => {
+    const permission = userService.permission();
+
+    res.status(200).json(permission);
+}
+
+module.exports = { login, data, update, registrar, alterImg, calculateSpent, permission }

@@ -95,4 +95,8 @@ const calculateSpent = async (token) => {
     return spent
 };
 
-module.exports = { login, data, update, registrar, alterImg, calculateSpent }
+const permission = () => {
+    return { "permission": true };
+}
+
+module.exports = { login, data, update, registrar, alterImg, calculateSpent, permission }
