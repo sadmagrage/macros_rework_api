@@ -73,7 +73,7 @@ const registrar = async (userDto) => {
     
     userDto["hashPassword"] = getHash;
 
-    const user = User.build({ username: userDto.username, password: userDto.hashPassword, treino: JSON.stringify({"domingo": [], "segunda": [], "terca": [], "quarta": [], "quinta": [], "sexta": [], "sabado": []}) });
+    const user = User.build({ username: userDto.username, password: userDto.hashPassword });
 
     await user.save();
 

@@ -30,7 +30,8 @@ const User = sequelize.define("user_macros", {
         type: DataTypes.SMALLINT
     },
     treino: {
-        type: DataTypes.JSON
+        type: DataTypes.JSON,
+        defaultValue: { "domingo": [], "segunda": [], "terca": [], "quarta": [], "quinta": [], "sexta": [], "sabado": [] }
     },
     deficit: {
         type: DataTypes.SMALLINT
