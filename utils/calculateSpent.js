@@ -17,7 +17,10 @@ const calculateSpent = (user) => {
     let gasto = 0;
 
     Object.keys(treino).map((diaDaSemana, index) => {
-        if (index === new Date().getDay()) {
+        const date = new Date();
+        date.setHours(date.getHours() - 3)
+
+        if (index === date.getDay()) {
             const supino = treino[diaDaSemana].filter(item => item.treino === "supino").length > 0 ? treino[diaDaSemana].filter(item => item.treino === "supino")[0].serie : 0;
             const terra = treino[diaDaSemana].filter(item => item.treino === "terra").length > 0 ? treino[diaDaSemana].filter(item => item.treino === "terra")[0].serie : 0;
             const agacho = treino[diaDaSemana].filter(item => item.treino === "agacho").length > 0 ? treino[diaDaSemana].filter(item => item.treino === "agacho")[0].serie : 0;
