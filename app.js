@@ -9,7 +9,7 @@ const { router: comidaRouter } = require("./routers/comidaRouter");
 
 const app = express();
 
-app.use(cors({ origin: "https://open-tortoiseshell-textbook.glitch.me" }));
+app.use(cors({ origin: "https://macros-rework.vercel.app" }));
 
 app.use("/user", userRouter);
 app.use("/comida", comidaRouter);
