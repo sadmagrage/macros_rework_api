@@ -23,15 +23,9 @@ const User = sequelize.define("user_macros", {
     bodyfat: {
         type: DataTypes.TINYINT
     },
-    idade: {
-        type: DataTypes.TINYINT
-    },
-    altura: {
-        type: DataTypes.SMALLINT
-    },
-    treino: {
-        type: DataTypes.JSON,
-        defaultValue: { "domingo": [], "segunda": [], "terca": [], "quarta": [], "quinta": [], "sexta": [], "sabado": [] }
+    fator_atividade: {
+        type: DataTypes.FLOAT,
+        defaultValue: 1.3
     },
     deficit: {
         type: DataTypes.SMALLINT
