@@ -8,7 +8,7 @@ const calculateSpent = (user) => {
     const tinsleyWeight = user => {
         const gKgProtein = user.estado == 'cutting' ? 2.5 : 2;
 
-        let gasto = (24.8 * user.peso + 10) * user.fator_atividade;
+        let gasto = (24.8 * user.peso + 10) * user.fator_atividade + user.adicional;
 
         if (user.estado == 'cutting') {
             gasto -= user.deficit;
@@ -35,7 +35,7 @@ const calculateSpent = (user) => {
         const gKgProtein = user.estado == 'cutting' ? 2.5 : 2;
         const pesoMagro = user.peso * (100 - user.bodyfat)/100;
 
-        let gasto = (25.9 * pesoMagro + 284) * user.fator_atividade;
+        let gasto = (25.9 * pesoMagro + 284) * user.fator_atividade + user.adicional;
 
         if (user.estado == 'cutting') {
             gasto -= user.deficit;
