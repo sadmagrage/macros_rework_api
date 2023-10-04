@@ -26,7 +26,7 @@ const data = async (token) => {
         return decoded.username;
     });
     
-    const user = await User.findOne({ where: { username: username }, attributes: [ 'username', 'peso', 'bodyfat', 'idade', 'altura', 'treino', 'deficit', 'superavit', 'adicional', 'estado', 'img' ]});
+    const user = await User.findOne({ where: { username: username }, attributes: [ 'username', 'peso', 'bodyfat', 'fator_atividade', 'deficit', 'superavit', 'adicional', 'estado', 'img' ]});
 
     if (!user) return "No user found";
 
