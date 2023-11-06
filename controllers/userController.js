@@ -5,7 +5,7 @@ const login = async (req, res) => {
     try {
         const token = await userService.login(req.body);
 
-        res.status(200).cookie("token", token).send("Logado com sucesso");
+        res.status(200).send(token);
     } catch (error) {
         if (error instanceof CustomError) {
             res.status(error.status).json(error.message);
@@ -35,7 +35,7 @@ const registrar = async (req, res) => {
     try {
         const token = await userService.registrar(req.body);
         
-        res.status(201).cookie("token", token).send("Registrado com sucesso");
+        res.status(201).send(token);
     } catch (error) {
         console.log(error.message)
         if (error instanceof CustomError) {
