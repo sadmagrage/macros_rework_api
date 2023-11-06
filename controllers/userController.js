@@ -17,7 +17,7 @@ const login = async (req, res) => {
 
 const data = async (req, res) => {
     try {
-        const token = req.header("Authorization");
+        const token = req.cookies.token;
 
         const user = await userService.data(token);
 
@@ -48,7 +48,7 @@ const registrar = async (req, res) => {
 
 const alterImg = async (req, res) => {
     try {
-        const user = await userService.alterImg(req.header("Authorization"), req.body);
+        const user = await userService.alterImg(req.cookies.token, req.body);
         
         res.status(200).json(user);
     } catch (error) {
@@ -62,7 +62,7 @@ const alterImg = async (req, res) => {
 
 const update = async (req, res) => {
     try {
-        const user = await userService.update(req.header("Authorization"), req.body);
+        const user = await userService.update(req.cookies.token, req.body);
 
         res.status(200).json("Updated sucessfully");
     } catch (error) {
@@ -76,7 +76,7 @@ const update = async (req, res) => {
 
 const calculateSpent = async (req, res) => {
     try {
-        const spent = await userService.calculateSpent(req.header("Authorization"));
+        const spent = await userService.calculateSpent(req.cookies.token);
 
         res.status(200).json(spent);
     } catch (error) {
