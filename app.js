@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 
 const User = require("./models/UserModel");
 const Comida = require("./models/ComidaModel");
@@ -9,7 +10,9 @@ const { router: comidaRouter } = require("./routers/comidaRouter");
 
 const app = express();
 
-app.use(cors({ origin: "https://macros-rework.vercel.app" }));
+//app.use(cors({ origin: "https://macros-rework.vercel.app" }));
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(cookieParser());
 
 app.use("/user", userRouter);
 app.use("/comida", comidaRouter);

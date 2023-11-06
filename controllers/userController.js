@@ -3,9 +3,9 @@ const userService = require("../services/userService");
 
 const login = async (req, res) => {
     try {
-        const user = await userService.login(req.body);
+        const token = await userService.login(req.body);
 
-        res.status(200).json(user);
+        res.status(200).cookie("token", token).send("Logado com sucesso");
     } catch (error) {
         if (error instanceof CustomError) {
             res.status(error.status).json(error.message);
@@ -17,7 +17,9 @@ const login = async (req, res) => {
 
 const data = async (req, res) => {
     try {
-        const user = await userService.data(req.header("Authorization"));
+        const { token } = req.cookies;
+
+        const user = await userService.data(token);
 
         res.status(200).json(user);
     } catch (error) {
@@ -31,9 +33,9 @@ const data = async (req, res) => {
 
 const registrar = async (req, res) => {
     try {
-        const user = await userService.registrar(req.body);
+        const token = await userService.registrar(req.body);
         
-        res.status(201).json(user);
+        res.status(201).cookie("token", token).send("Registrado com sucesso");
     } catch (error) {
         console.log(error.message)
         if (error instanceof CustomError) {
@@ -46,7 +48,9 @@ const registrar = async (req, res) => {
 
 const alterImg = async (req, res) => {
     try {
-        const user = await userService.alterImg(req.header("Authorization"), req.body);
+        const { token } = req.cookies;
+
+        const user = await userService.alterImg(token, req.body);
         
         res.status(200).json(user);
     } catch (error) {
@@ -60,7 +64,9 @@ const alterImg = async (req, res) => {
 
 const update = async (req, res) => {
     try {
-        const user = await userService.update(req.header("Authorization"), req.body);
+        const { token } = req.cookies;
+
+        const user = await userService.update(token, req.body);
 
         res.status(200).json("Updated sucessfully");
     } catch (error) {
@@ -74,7 +80,9 @@ const update = async (req, res) => {
 
 const calculateSpent = async (req, res) => {
     try {
-        const spent = await userService.calculateSpent(req.header("Authorization"));
+        const { token } = req.cookies;
+
+        const spent = await userService.calculateSpent(token);
 
         res.status(200).json(spent);
     } catch (error) {
