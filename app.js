@@ -9,8 +9,7 @@ const { router: comidaRouter } = require("./routers/comidaRouter");
 
 const app = express();
 
-//app.use(cors({ origin: "https://macros-rework.vercel.app" }));
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: "https://macros-rework.vercel.app", credentials: true }));
 
 app.use("/user", userRouter);
 app.use("/comida", comidaRouter);
