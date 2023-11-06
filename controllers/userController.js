@@ -17,7 +17,7 @@ const login = async (req, res) => {
 
 const data = async (req, res) => {
     try {
-        const user = userService.data(req.header("Authorization"));
+        const user = await userService.data(req.header("Authorization"));
 
         res.status(200).json(user);
     } catch (error) {
