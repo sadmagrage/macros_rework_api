@@ -5,7 +5,7 @@ const login = async (req, res) => {
     try {
         const token = await userService.login(req.body);
 
-        res.status(200).send(token);
+        res.status(200).json(token);
     } catch (error) {
         if (error instanceof CustomError) {
             res.status(error.status).json(error.message);
@@ -15,7 +15,7 @@ const login = async (req, res) => {
     }
 }
 
-const data = async (req, res) => {
+/* const data = async (req, res) => {
     try {
         const { token } = req.cookies;
 
@@ -29,13 +29,13 @@ const data = async (req, res) => {
         }
         res.status(500).json(error.message);
     }
-}
+} */
 
 const registrar = async (req, res) => {
     try {
         const token = await userService.registrar(req.body);
         
-        res.status(201).send(token);
+        res.status(201).json(token);
     } catch (error) {
         console.log(error.message)
         if (error instanceof CustomError) {
@@ -48,12 +48,13 @@ const registrar = async (req, res) => {
 
 const alterImg = async (req, res) => {
     try {
-        const { token } = req.cookies;
+        const token = req.header("Authorization");
 
-        const user = await userService.alterImg(token, req.body);
+        const user = await userService.alterImg(token, req.file);
         
         res.status(200).json(user);
     } catch (error) {
+        console.log(error)
         if (error instanceof CustomError) {
             res.status(error.status).json(error.message);
             return;
@@ -64,7 +65,7 @@ const alterImg = async (req, res) => {
 
 const update = async (req, res) => {
     try {
-        const { token } = req.cookies;
+        const token = req.header("Authorization");
 
         const user = await userService.update(token, req.body);
 
@@ -80,7 +81,7 @@ const update = async (req, res) => {
 
 const calculateSpent = async (req, res) => {
     try {
-        const { token } = req.cookies;
+        const token = req.header("Authorization");
 
         const spent = await userService.calculateSpent(token);
 
@@ -100,4 +101,4 @@ const permission = (req, res) => {
     res.status(200).json(permission);
 }
 
-module.exports = { login, data, update, registrar, alterImg, calculateSpent, permission }
+module.exports = { login, update, registrar, alterImg, calculateSpent, permission }

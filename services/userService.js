@@ -5,41 +5,32 @@ require("dotenv").config();
 const User = require("../models/UserModel");
 const CustomError = require("../errors/CustomError");
 const calculateSpentFunction = require("../utils/calculateSpent");
+const UserImg = require("../models/UserImgModel");
+require("../configs/mongoose");
 
 const login = async (userDto) => {
     const user = await User.findOne({ where: { username: userDto.username } });
 
     const access = await bcrypt.compare(userDto.password, user.password);
-    if (access) {
-        const token = jwt.sign({ username: user.username }, process.env.SEGREDO, { expiresIn: "1h" });
 
-        return token;
+    const userImg = await UserImg.findOne({ '_id': user.user_id });
+
+    delete user.password;
+
+    if (access) {
+        const token = jwt.sign({ data: user }, process.env.SEGREDO, { expiresIn: "30min" });
+
+        return { token, "userImg": userImg.user_img };
     }
     else {
         throw new CustomError("Wrong credentials", 401);
     }
 }
 
-const data = async (token) => {
-    const username = await jwt.verify(token, process.env.SEGREDO, (err, decoded) => {
-        if (err) throw new CustomError(err.message, 401);
-        return decoded.username;
-    });
-    
-    const user = await User.findOne({ where: { username: username }, attributes: [ 'username', 'peso', 'bodyfat', 'fator_atividade', 'deficit', 'superavit', 'adicional', 'estado', 'img' ]});
-    
-    if (!user) return "No user found";
-    
-    return user;
-}
-
 const update = async (token, userDto) => {
-    const username = await jwt.verify(token, process.env.SEGREDO, (err, decoded) => {
-        if (err) throw new CustomError(err.message, 401);
-        return decoded.username;
-    });
+    const data = jwt.verify(token, process.env.SEGREDO).data;
 
-    const user = await User.findOne({ where: { username: username } });
+    const user = await User.findOne({ where: { username: data.username } });
     
     Object.keys(userDto).map(item => {
         user[item] = userDto[item];
@@ -50,18 +41,27 @@ const update = async (token, userDto) => {
     return user;
 };
 
-const alterImg = async (token, userDto) => {
-    const username = await jwt.verify(token, process.env.SEGREDO, (err, decoded) => {
-        if (err) throw new CustomError(err.message, 401);
-        return decoded.username;
-    });
+const alterImg = async (token, userImage) => {
+    const data = jwt.verify(token, process.env.SEGREDO).data;
 
-    const user = await User.findOne({ where: { username: username } });
+    //const user = await User.findOne({ where: { username: data.username } });
 
-    user.img = userDto.img;
-    await user.save();
+    const userImgExists = await UserImg.findOne({ "_id": data.user_id });
 
-    return user;
+    let userImg = null;
+
+    if (userImgExists == undefined) {
+        userImg = await UserImg.create({ _id: data.user_id, user_img: userImage.buffer });
+    }
+    else {
+        userImg = await UserImg.findOneAndUpdate({ "_id": data.user_id }, { _id: data.user_id ,user_img: userImage.buffer }, { new: true });
+    }
+
+    data["img"] = userImg.user_img;
+
+    const newToken = jwt.sign({ "data": data }, process.env.SEGREDO, { expiresIn: "30min" });
+
+    return newToken;
 };
 
 const registrar = async (userDto) => {
@@ -77,18 +77,15 @@ const registrar = async (userDto) => {
 
     await user.save();
 
-    const token = jwt.sign({ username: user.username }, process.env.SEGREDO, { expiresIn: "1h" });
+    const token = jwt.sign({ data: user }, process.env.SEGREDO, { expiresIn: "30min" });
 
     return token;
 }
 
 const calculateSpent = async (token) => {
-    const username = await jwt.verify(token, process.env.SEGREDO, (err, decoded) => {
-        if (err) throw new CustomError(err.message, 401);
-        return decoded.username;
-    });
+    const data = jwt.verify(token, process.env.SEGREDO).data;
 
-    const user = await User.findOne({ where: { username: username } });
+    const user = await User.findOne({ where: { username: data.username } });
 
     const spent = calculateSpentFunction(user);
 
@@ -99,4 +96,4 @@ const permission = () => {
     return { "permission": true };
 }
 
-module.exports = { login, data, update, registrar, alterImg, calculateSpent, permission }
+module.exports = { login, update, registrar, alterImg, calculateSpent, permission }

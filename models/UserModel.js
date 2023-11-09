@@ -38,9 +38,6 @@ const User = sequelize.define("user_macros", {
     },
     estado: {
         type: DataTypes.ENUM("bulking", "cutting", "manutencao")
-    },
-    img: {
-        type: DataTypes.STRING
     }
 });
 
