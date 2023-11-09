@@ -71,11 +71,9 @@ const registrar = async (userDto) => {
 
     const getHash = await bcrypt.hash(userDto.password, 12);
     
-    userDto["hashPassword"] = getHash;
+    userDto.password = getHash;
 
-    const user = User.build({ username: userDto.username, password: userDto.hashPassword });
-
-    await user.save();
+    const user = await User.create({ ...userDto });
 
     const token = jwt.sign({ data: user }, process.env.SEGREDO, { expiresIn: "30min" });
 

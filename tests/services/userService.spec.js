@@ -7,7 +7,7 @@ const userService = require("../../services/userService");
 
 jest.mock("../../models/UserModel", () => ({
     findOne: jest.fn(),
-
+    create: jest.fn()
 }));
 
 jest.mock("../../models/UserImgModel", () => ({
@@ -15,7 +15,8 @@ jest.mock("../../models/UserImgModel", () => ({
 }));
 
 jest.mock("bcrypt", () => ({
-    compare: jest.fn()
+    compare: jest.fn(),
+    hash: jest.fn()
 }));
 
 jest.mock("jsonwebtoken", () => ({
@@ -25,6 +26,8 @@ jest.mock("jsonwebtoken", () => ({
 jest.mock("../../configs/mongoose", () => jest.fn());
 
 describe("userService", () => {
+    
+    beforeEach(() => jest.clearAllMocks());
 
     const userLoginMock = {
         username: "username_login",
@@ -66,5 +69,22 @@ describe("userService", () => {
         expect(jwt.sign).toHaveBeenCalledWith({ data: userMock }, process.env.SEGREDO, { expiresIn: "30min" });
         expect(response.token).not.toBe(undefined);
         expect(response.userImg).not.toBe(undefined);
+    });
+
+    test("register", async () => {
+        
+        User.findOne.mockResolvedValue(undefined);
+        bcrypt.hash.mockResolvedValue("hashPassword");
+        User.create.mockResolvedValue(userLoginMock);
+        jwt.sign.mockReturnValue("token");
+
+        const response = await userService.registrar(userLoginMock);
+
+        expect(User.findOne).toHaveBeenCalledWith({ where: { username: userLoginMock.username } });
+        expect(bcrypt.hash).toHaveBeenCalledWith(userLoginMock.password, 12);
+        expect(User.create).toHaveBeenCalledWith({ ...userDto });
+        expect(jwt.sign).toHaveBeenCalledWith({ data: userLoginMock }, process.env.SEGREDO, { expiresIn: "30min" });
+        expect(userLoginMock.password).toBe("hashPassword");
+        expect(response).toBe("token");
     });
 });
