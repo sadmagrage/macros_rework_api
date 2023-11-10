@@ -28,7 +28,7 @@ const login = async (userDto) => {
 }
 
 const update = async (token, userDto) => {
-    const data = jwt.verify(token, process.env.SEGREDO).data;
+    const { data } = jwt.verify(token, process.env.SEGREDO);
 
     const user = await User.findOne({ where: { username: data.username } });
     
@@ -42,7 +42,7 @@ const update = async (token, userDto) => {
 };
 
 const alterImg = async (token, userImage) => {
-    const data = jwt.verify(token, process.env.SEGREDO).data;
+    const { data } = jwt.verify(token, process.env.SEGREDO);
 
     //const user = await User.findOne({ where: { username: data.username } });
 
@@ -81,11 +81,9 @@ const registrar = async (userDto) => {
 }
 
 const calculateSpent = async (token) => {
-    const data = jwt.verify(token, process.env.SEGREDO).data;
+    const { data } = jwt.verify(token, process.env.SEGREDO);
 
-    const user = await User.findOne({ where: { username: data.username } });
-
-    const spent = calculateSpentFunction(user);
+    const spent = calculateSpentFunction(data);
 
     return spent
 };

@@ -20,7 +20,8 @@ jest.mock("bcrypt", () => ({
 }));
 
 jest.mock("jsonwebtoken", () => ({
-    sign: jest.fn()
+    sign: jest.fn(),
+    verify: jest.fn()
 }));
 
 jest.mock("../../configs/mongoose", () => jest.fn());
@@ -81,10 +82,18 @@ describe("userService", () => {
         const response = await userService.registrar(userLoginMock);
 
         expect(User.findOne).toHaveBeenCalledWith({ where: { username: userLoginMock.username } });
-        expect(bcrypt.hash).toHaveBeenCalledWith(userLoginMock.password, 12);
-        expect(User.create).toHaveBeenCalledWith({ ...userDto });
+        expect(bcrypt.hash).toHaveBeenCalledWith("password_login", 12);
+        expect(User.create).toHaveBeenCalledWith({ ...userLoginMock });
         expect(jwt.sign).toHaveBeenCalledWith({ data: userLoginMock }, process.env.SEGREDO, { expiresIn: "30min" });
         expect(userLoginMock.password).toBe("hashPassword");
         expect(response).toBe("token");
+    });
+
+    test("update ", async () => {
+
+        jwt.verify.mockReturnValue(userMock);
+        User.findOne.mockResolvedValue(userMock);
+        
+
     });
 });
