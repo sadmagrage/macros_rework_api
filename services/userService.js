@@ -27,41 +27,39 @@ const login = async (userDto) => {
     }
 }
 
-const update = async (token, userDto) => {
+const updateData = async (token, userDto) => {
     const { data } = jwt.verify(token, process.env.SEGREDO);
 
-    const user = await User.findOne({ where: { username: data.username } });
-    
-    Object.keys(userDto).map(item => {
-        user[item] = userDto[item];
-    });
+    const userExists = await User.findOne({ where: { username: data.username } });
 
-    await user.save();
+    if (!userExists) throw new CustomError("User not exists", 404);
 
-    return user;
-};
+    await User.update(userDto, { where: { user_id: data.user_id } });
 
-const alterImg = async (token, userImage) => {
-    const { data } = jwt.verify(token, process.env.SEGREDO);
+    const updatedUser = await User.findOne({ where: { user_id: data.user_id } });
 
-    //const user = await User.findOne({ where: { username: data.username } });
+    delete updatedUser.password;
 
-    const userImgExists = await UserImg.findOne({ "_id": data.user_id });
-
-    let userImg = null;
-
-    if (userImgExists == undefined) {
-        userImg = await UserImg.create({ _id: data.user_id, user_img: userImage.buffer });
-    }
-    else {
-        userImg = await UserImg.findOneAndUpdate({ "_id": data.user_id }, { _id: data.user_id ,user_img: userImage.buffer }, { new: true });
-    }
-
-    data["img"] = userImg.user_img;
-
-    const newToken = jwt.sign({ "data": data }, process.env.SEGREDO, { expiresIn: "30min" });
+    const newToken = jwt.sign({ data: updatedUser }, process.env.SEGREDO, { expiresIn: "30min" });
 
     return newToken;
+};
+
+const updateImage = async (token, userImage) => {
+    const { user_id } = jwt.verify(token, process.env.SEGREDO).data;
+
+    const userImgExists = await UserImg.findOne({ "_id": user_id });
+
+    let userImg;
+
+    if (userImgExists == undefined) {
+        userImg = await UserImg.create({ _id: user_id, user_img: userImage.buffer });
+    }
+    else {
+        userImg = await UserImg.findOneAndUpdate({ "_id": user_id }, { _id: user_id ,user_img: userImage.buffer }, { new: true });
+    }
+
+    return userImg.buffer;
 };
 
 const registrar = async (userDto) => {
@@ -80,7 +78,7 @@ const registrar = async (userDto) => {
     return token;
 }
 
-const calculateSpent = async (token) => {
+const calculateSpent = (token) => {
     const { data } = jwt.verify(token, process.env.SEGREDO);
 
     const spent = calculateSpentFunction(data);
@@ -92,4 +90,4 @@ const permission = () => {
     return { "permission": true };
 }
 
-module.exports = { login, update, registrar, alterImg, calculateSpent, permission }
+module.exports = { login, updateData, registrar, updateImage, calculateSpent, permission }

@@ -15,22 +15,6 @@ const login = async (req, res) => {
     }
 }
 
-/* const data = async (req, res) => {
-    try {
-        const { token } = req.cookies;
-
-        const user = await userService.data(token);
-
-        res.status(200).json(user);
-    } catch (error) {
-        if (error instanceof CustomError) {
-            res.status(error.status).json(error.message);
-            return;
-        }
-        res.status(500).json(error.message);
-    }
-} */
-
 const registrar = async (req, res) => {
     try {
         const token = await userService.registrar(req.body);
@@ -46,13 +30,13 @@ const registrar = async (req, res) => {
     }
 }
 
-const alterImg = async (req, res) => {
+const updateImage = async (req, res) => {
     try {
         const token = req.header("Authorization");
 
-        const user = await userService.alterImg(token, req.file);
+        const buffer = await userService.updateImage(token, req.file);
         
-        res.status(200).json(user);
+        res.status(200).json(buffer);
     } catch (error) {
         console.log(error)
         if (error instanceof CustomError) {
@@ -63,13 +47,13 @@ const alterImg = async (req, res) => {
     }
 }
 
-const update = async (req, res) => {
+const updateData = async (req, res) => {
     try {
         const token = req.header("Authorization");
 
-        const user = await userService.update(token, req.body);
+        const newToken = await userService.updateData(token, req.body);
 
-        res.status(200).json("Updated sucessfully");
+        res.status(200).json(newToken);
     } catch (error) {
         if (error instanceof CustomError) {
             res.status(error.status).json(error.message);
@@ -79,11 +63,11 @@ const update = async (req, res) => {
     }
 }
 
-const calculateSpent = async (req, res) => {
+const calculateSpent = (req, res) => {
     try {
         const token = req.header("Authorization");
 
-        const spent = await userService.calculateSpent(token);
+        const spent = userService.calculateSpent(token);
 
         res.status(200).json(spent);
     } catch (error) {
@@ -101,4 +85,4 @@ const permission = (req, res) => {
     res.status(200).json(permission);
 }
 
-module.exports = { login, update, registrar, alterImg, calculateSpent, permission }
+module.exports = { login, updateData, registrar, updateImage, calculateSpent, permission }

@@ -14,10 +14,7 @@ const findOne = async (comidaId) => {
 }
 
 const save = async (token, comidaDto) => {
-    const username = await jwt.verify(token, process.env.SEGREDO, (err, decoded) => {
-        if (err) throw err;
-        return decoded.username;
-    });
+    const { username } = jwt.verify(token, process.env.SEGREDO).data;
 
     if (username !== "sadmag") return;
 

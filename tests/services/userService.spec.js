@@ -4,10 +4,12 @@ const jwt = require("jsonwebtoken");
 const User = require("../../models/UserModel");
 const UserImg = require("../../models/UserImgModel");
 const userService = require("../../services/userService");
+const calculateSpentFunction = require("../../utils/calculateSpent");
 
 jest.mock("../../models/UserModel", () => ({
     findOne: jest.fn(),
-    create: jest.fn()
+    create: jest.fn(),
+    update: jest.fn()
 }));
 
 jest.mock("../../models/UserImgModel", () => ({
@@ -23,6 +25,8 @@ jest.mock("jsonwebtoken", () => ({
     sign: jest.fn(),
     verify: jest.fn()
 }));
+
+jest.mock("../../utils/calculateSpent", () => jest.fn());
 
 jest.mock("../../configs/mongoose", () => jest.fn());
 
@@ -89,11 +93,50 @@ describe("userService", () => {
         expect(response).toBe("token");
     });
 
-    test("update ", async () => {
+    test("updateData", async () => {
 
-        jwt.verify.mockReturnValue(userMock);
+        jwt.verify.mockReturnValue({ data: userMock });
         User.findOne.mockResolvedValue(userMock);
-        
+        User.update.mockResolvedValue(userMock);
+        jwt.sign.mockReturnValue("newToken");
 
+        const newToken = await userService.updateData("token", userMock);
+
+        expect(jwt.verify).toHaveBeenCalledWith("token", process.env.SEGREDO);
+        expect(User.findOne).toHaveBeenCalledTimes(2);
+        expect(User.findOne).toHaveBeenCalledWith({ where: { username: userMock.username } });
+        expect(User.findOne).toHaveBeenCalledWith({ where: { user_id: userMock.user_id } });
+        expect(User.update).toHaveBeenCalledWith(userMock, { where: { user_id: userMock.user_id } });
+        expect(jwt.sign).toHaveBeenCalledWith({ data: userMock }, process.env.SEGREDO, { expiresIn: "30min" });
+        expect(userMock.password).toBe(undefined);
+        expect(newToken).toBe("newToken");
+    });
+
+    test("updateImage", async () => {
+
+        jwt.verify.mockReturnValue({ data: userMock });
+        UserImg.findOne.mockResolvedValue(userImgMock);
+        User.update.mockResolvedValue(userMock);
+        jwt.sign.mockReturnValue("newToken");
+
+        const newToken = await userService.updateData("token", userMock);
+
+        expect(jwt.verify).toHaveBeenCalledWith("token", process.env.SEGREDO);
+
+        expect(User.update).toHaveBeenCalledWith(userMock, { where: { user_id: userMock.user_id } });
+        expect(jwt.sign).toHaveBeenCalledWith({ data: userMock }, process.env.SEGREDO, { expiresIn: "30min" });
+        expect(userMock.password).toBe(undefined);
+        expect(newToken).toBe("newToken");
+    });
+
+    test("calculateSpent", () => {
+
+        jwt.verify.mockReturnValue({ data: userMock });
+        calculateSpentFunction.mockReturnValue("3000.00");
+
+        userService.calculateSpent("token");
+
+        expect(jwt.verify).toHaveBeenCalledWith("token", process.env.SEGREDO);
+        expect(calculateSpentFunction).toHaveBeenCalledWith(userMock);
     });
 });
