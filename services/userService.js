@@ -11,6 +11,8 @@ require("../configs/mongoose");
 const login = async (userDto) => {
     const user = await User.findOne({ where: { username: userDto.username } });
 
+    if (!user) throw new CustomError("Wrong credentials", 401);
+
     const access = await bcrypt.compare(userDto.password, user.password);
 
     const userImg = await UserImg.findOne({ '_id': user.user_id });
@@ -59,7 +61,7 @@ const updateImage = async (token, userImage) => {
         userImg = await UserImg.findOneAndUpdate({ "_id": user_id }, { _id: user_id ,user_img: userImage.buffer }, { new: true });
     }
 
-    return userImg.buffer;
+    return userImg.user_img;
 };
 
 const registrar = async (userDto) => {
