@@ -32,7 +32,7 @@ const calculateSpent = (user) => {
     }
 
     const tinsleyMLG = user => {
-        const gKgProtein = user.estado == 'cutting' ? 3 : 2;
+        const gKgProtein = user.estado == 'cutting' ? 2.5 : 2;
         const pesoMagro = user.peso * (100 - user.bodyfat)/100;
 
         let gasto = (25.9 * pesoMagro + 284) * user.fator_atividade + user.adicional;
