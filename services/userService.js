@@ -5,24 +5,22 @@ require("dotenv").config();
 const User = require("../models/UserModel");
 const CustomError = require("../errors/CustomError");
 const calculateSpentFunction = require("../utils/calculateSpent");
-const UserImg = require("../models/UserImgModel");
-require("../configs/mongoose");
 
-const login = async (userDto) => {
-    const user = await User.findOne({ where: { username: userDto.username } });
+const login = async userDto => {
+    const user = await User.findOne({ where: { username: userDto.username }, attributes: { exclude: ["image"] } });
+
+    const { image: userImg } = user ? user : { image: null } ;
 
     if (!user) throw new CustomError("Wrong credentials", 401);
 
     const access = await bcrypt.compare(userDto.password, user.password);
-
-    const userImg = await UserImg.findOne({ '_id': user.user_id });
 
     delete user.password;
 
     if (access) {
         const token = jwt.sign({ data: user }, process.env.SEGREDO, { expiresIn: "30min" });
 
-        return { token, "userImg": userImg.user_img };
+        return { token, userImg };
     }
     else {
         throw new CustomError("Wrong credentials", 401);
@@ -36,9 +34,9 @@ const updateData = async (token, userDto) => {
 
     if (!userExists) throw new CustomError("User not exists", 404);
 
-    await User.update(userDto, { where: { user_id: data.user_id } });
+    await User.update(userDto, { where: { userId: data.userId } });
 
-    const updatedUser = await User.findOne({ where: { user_id: data.user_id } });
+    const updatedUser = await User.findOne({ where: { userId: data.userId } });
 
     delete updatedUser.password;
 
@@ -47,21 +45,26 @@ const updateData = async (token, userDto) => {
     return newToken;
 };
 
+const getUserImage = async token => {
+    console.log(token);
+    const { username } = jwt.verify(token, process.env.SEGREDO).data;
+
+    const { image } = await User.findOne({ where: { username }, attributes: ['image'] });
+
+    return image;
+};
+
 const updateImage = async (token, userImage) => {
-    const { user_id } = jwt.verify(token, process.env.SEGREDO).data;
+    const { userId } = jwt.verify(token, process.env.SEGREDO).data;
 
-    const userImgExists = await UserImg.findOne({ "_id": user_id });
+    //const userImgExists = await UserImg.findOne({ "_id": user_id });
+    const userExists = await User.findOne({ where: { userId }, attributes: ["userId"] });
 
-    let userImg;
+    if (!userExists) throw new CustomError("User not found", 404);
 
-    if (userImgExists == undefined) {
-        userImg = await UserImg.create({ _id: user_id, user_img: userImage.buffer });
-    }
-    else {
-        userImg = await UserImg.findOneAndUpdate({ "_id": user_id }, { _id: user_id ,user_img: userImage.buffer }, { new: true });
-    }
+    await User.update({ image: userImage.buffer }, { where: { userId } });
 
-    return userImg.user_img;
+    return userImage;
 };
 
 const registrar = async (userDto) => {
@@ -80,7 +83,7 @@ const registrar = async (userDto) => {
     return token;
 }
 
-const calculateSpent = (token) => {
+const calculateSpent = token => {
     const { data } = jwt.verify(token, process.env.SEGREDO);
 
     const spent = calculateSpentFunction(data);
@@ -92,4 +95,4 @@ const permission = () => {
     return { "permission": true };
 }
 
-module.exports = { login, updateData, registrar, updateImage, calculateSpent, permission }
+module.exports = { login, updateData, registrar, updateImage, calculateSpent, permission, getUserImage }

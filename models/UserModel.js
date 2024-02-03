@@ -3,7 +3,7 @@ const { DataTypes } = require("sequelize");
 const { sequelize } = require("../configs/sequelize");
 
 const User = sequelize.define("user_macros", {
-    user_id: {
+    userId: {
         type: DataTypes.CHAR(36),
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true
@@ -17,13 +17,16 @@ const User = sequelize.define("user_macros", {
         type: DataTypes.STRING,
         allowNull: false
     },
+    image: {
+        type: DataTypes.BLOB("long")
+    },
     peso: {
         type: DataTypes.TINYINT
     },
     bodyfat: {
         type: DataTypes.TINYINT
     },
-    fator_atividade: {
+    fatorAtividade: {
         type: DataTypes.FLOAT,
         defaultValue: 1.3
     },

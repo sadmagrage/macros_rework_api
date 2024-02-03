@@ -2,11 +2,13 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const multer = require("multer");
 
-const { login, registrar, updateData, updateImage, calculateSpent, permission } = require("../controllers/userController");
+const { login, registrar, updateData, updateImage, calculateSpent, permission, getUserImage } = require("../controllers/userController");
 
 const router = express.Router();
 
 router.use(bodyParser.json());
+
+router.get("/image", getUserImage);
 
 router.post("/login", login);
 

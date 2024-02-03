@@ -30,6 +30,21 @@ const registrar = async (req, res) => {
     }
 }
 
+const getUserImage = async (req, res) => {
+    try {
+        console.log("ak chegou\ndiasdjisajdas\ndsaijodsajds");
+        const image = await userService.getUserImage(req.header("Authorization"));
+
+        res.status(200).json(image);
+    } catch (error) {
+        if (error instanceof CustomError) {
+            res.status(error.status).json(error.message);
+            return;
+        }
+        res.status(500).json(error.message);   
+    }
+};
+
 const updateImage = async (req, res) => {
     try {
         const token = req.header("Authorization");
@@ -38,7 +53,6 @@ const updateImage = async (req, res) => {
         
         res.status(200).json(buffer);
     } catch (error) {
-        console.log(error)
         if (error instanceof CustomError) {
             res.status(error.status).json(error.message);
             return;
@@ -85,4 +99,4 @@ const permission = (req, res) => {
     res.status(200).json(permission);
 }
 
-module.exports = { login, updateData, registrar, updateImage, calculateSpent, permission }
+module.exports = { login, updateData, registrar, updateImage, calculateSpent, permission, getUserImage }

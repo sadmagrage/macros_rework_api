@@ -6,6 +6,10 @@ const sequelize = new Sequelize(process.env.DB_URI, {
         ssl: {
             rejectUnauthorized: true
         }
+    },
+    define: {
+        underscored: true,
+        underscoredAll: true
     }
 });
 
