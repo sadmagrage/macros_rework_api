@@ -3,7 +3,7 @@ const { DataTypes } = require("sequelize");
 const { sequelize } = require("../configs/sequelize");
 
 const Comida = sequelize.define("new_comida", {
-    comida_id: {
+    comidaId: {
         type: DataTypes.CHAR(36),
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true
@@ -28,9 +28,8 @@ const Comida = sequelize.define("new_comida", {
         type: DataTypes.FLOAT,
         defaultValue: 0.0
     },
-    img: {
-        type: DataTypes.STRING,
-        defaultValue: ""
+    image: {
+        type: DataTypes.BLOB("long")
     }
 });
 

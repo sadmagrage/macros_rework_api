@@ -13,4 +13,12 @@ const sequelize = new Sequelize(process.env.DB_URI, {
     }
 });
 
+// const sequelize = new Sequelize({
+//     host: "localhost",
+//     username: "root",
+//     password: "root",
+//     database: "teste",
+//     dialect: "mysql"
+// });
+
 module.exports = { sequelize };
