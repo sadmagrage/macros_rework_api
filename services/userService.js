@@ -46,7 +46,6 @@ const updateData = async (token, userDto) => {
 };
 
 const getUserImage = async token => {
-    console.log(token);
     const { username } = jwt.verify(token, process.env.SEGREDO).data;
 
     const { image } = await User.findOne({ where: { username }, attributes: ['image'] });
@@ -56,9 +55,10 @@ const getUserImage = async token => {
 
 const updateImage = async (token, userImage) => {
     const { userId } = jwt.verify(token, process.env.SEGREDO).data;
+    
+    const userExists = await User.findOne({ where: { userId }, attributes: ["userId", "username"] });
 
-    //const userImgExists = await UserImg.findOne({ "_id": user_id });
-    const userExists = await User.findOne({ where: { userId }, attributes: ["userId"] });
+    if (userExists.username == "Convidado") throw new CustomError("Cannot change image from guest profile !!!", 403);
 
     if (!userExists) throw new CustomError("User not found", 404);
 
