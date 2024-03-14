@@ -32,7 +32,6 @@ const registrar = async (req, res) => {
 
 const getUserImage = async (req, res) => {
     try {
-        console.log("ak chegou\ndiasdjisajdas\ndsaijodsajds");
         const image = await userService.getUserImage(req.header("Authorization"));
 
         res.status(200).json(image);
